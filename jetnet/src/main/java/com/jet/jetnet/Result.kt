@@ -2,7 +2,6 @@ package com.jet.jetnet
 
 /**
  * @author tujian
- * @Date: 2023/06/12
  */
 sealed class Result<out T> {
 

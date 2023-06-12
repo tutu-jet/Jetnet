@@ -1,42 +1,49 @@
 package com.jet.jetnet
 
-import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.lang.Exception
 
-/**
- * @author tujian
- * @date 2023/06/12
- * @desc retrofit helper api
- */
 object RetrofitHelper {
 
-    val retrofit: Retrofit by lazy {
-        Retrofit.Builder()
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
+    private val retrofitBuilder: Retrofit.Builder by lazy {
+        Retrofit.Builder().addConverterFactory(GsonConverterFactory.create())
     }
 
-    inline fun <reified T> createService(): T {
-        return retrofit.create(T::class.java)
+    private var mRetrofit : Retrofit? = null
+
+    /**
+     * Must be called before createService()
+     */
+    fun setBaseUrl(baseUrl: String) {
+        if (mRetrofit == null) {
+            mRetrofit = retrofitBuilder.baseUrl(baseUrl).build()
+        } else {
+            throw IllegalStateException("RetrofitHelper: BaseUrl is already set")
+        }
     }
 
-    suspend fun <T> executeRequest(request: suspend () -> Response<T>): Result<T> {
+    /**
+     * Use with caution, this can mess up the baseUrl.
+     */
+    fun updateBaseUrl(baseUrl: String) {
+        mRetrofit = retrofitBuilder.baseUrl(baseUrl).build()
+    }
+
+    fun <T> createService(serviceClass: Class<T>): T {
+        return mRetrofit?.create(serviceClass)
+            ?: throw IllegalStateException("RetrofitHelper: BaseUrl is not set")
+    }
+
+    suspend fun <T> executeRequest(request: suspend () -> retrofit2.Response<T>): Result<T> {
         return try {
             val response = request()
             if (response.isSuccessful) {
                 Result.Success(response.body())
             } else {
-                Result.Error(
-                    Exception(
-                        (response.errorBody() ?: "te-test: unknown error").toString()
-                    )
-                )
+                Result.Error(Exception(response.errorBody()?.string()))
             }
         } catch (e: Exception) {
             Result.Error(e)
         }
     }
-
 }
