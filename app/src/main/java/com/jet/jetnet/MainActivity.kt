@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
         viewBinding.tvTest.setOnClickListener {
             lifecycleScope.launch {
                 RetrofitHelper
-                    .executeRequest { testService.getBaidu() }
+                    .executeRequest { testService.getBaidu().execute() }
                     .handleResult(
                         successHandler = {
                             Toast.makeText(this@MainActivity, "调用成功", Toast.LENGTH_SHORT).show()

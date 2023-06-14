@@ -1,8 +1,11 @@
 package com.jet.jetnet
 
 import android.util.Log
+import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
+import com.jet.jetnet.interceptor.RawJsonInterceptor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import okhttp3.OkHttpClient
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -13,10 +16,15 @@ import retrofit2.converter.gson.GsonConverterFactory
  */
 object RetrofitHelper {
 
-    private val mTag: String = "RetrofitHelper"
+    private const val mTag: String = "RetrofitHelper"
 
     private val retrofitBuilder: Retrofit.Builder by lazy {
-        Retrofit.Builder().addConverterFactory(GsonConverterFactory.create())
+        Retrofit.Builder()
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(OkHttpClient.Builder()
+                .addInterceptor(RawJsonInterceptor(mTag)) // 添加拦截器
+                .build()
+        )
     }
 
     private var mRetrofit: Retrofit? = null

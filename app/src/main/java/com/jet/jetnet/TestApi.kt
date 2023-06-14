@@ -1,12 +1,13 @@
 package com.jet.jetnet
 
+import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.Field
 import retrofit2.http.GET
 
 interface TestApi {
     @GET("/release/news")
-    fun getBaidu(): Response<News>
+    fun getBaidu(): Call<Response<News>>
 }
 
 data class News(
