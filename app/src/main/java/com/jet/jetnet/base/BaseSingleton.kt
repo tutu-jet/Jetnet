@@ -2,6 +2,7 @@ package com.jet.jetnet.base
 
 /**
  * @author tujian
+ * @date 2023/06/13
  */
 abstract class BaseSingleton<in T, out R> {
 
