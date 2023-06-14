@@ -15,3 +15,4 @@ dependencyResolutionManagement {
 rootProject.name = "Jetnet"
 include ':app'
 include ':jetnet'
+include ':jetcommon'
